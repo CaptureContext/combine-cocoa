@@ -6,7 +6,7 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if canImport(UIKit) && canImport(Combine)
+#if canImport(UIKit) && canImport(Combine) && !os(watchOS)
   import Foundation
   import UIKit
   import CombineExtensions
@@ -107,6 +107,7 @@
         .eraseToAnyPublisher()
     }
 
+    #if !os(tvOS)
     /// Combine wrapper for `tableView(_:willBeginEditingRowAt:)`
     public var willBeginEditingRow: AnyPublisher<IndexPath, Never> {
       let selector = #selector(UITableViewDelegate.tableView(_:willBeginEditingRowAt:))
@@ -122,6 +123,7 @@
         .map { $0[1] as! IndexPath }
         .eraseToAnyPublisher()
     }
+    #endif
 
     public var delegateProxy: TableViewDelegateProxy {
       .createDelegateProxy(for: base)

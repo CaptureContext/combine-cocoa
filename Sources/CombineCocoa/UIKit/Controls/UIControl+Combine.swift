@@ -6,7 +6,7 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if canImport(Combine) && os(iOS)
+#if canImport(Combine) && canImport(UIKit) && !os(watchOS)
   import CombineExtensions
   import UIKit
 
@@ -20,7 +20,7 @@
       ).eraseToAnyPublisher()
     }
   }
-#elseif canImport(Combine) && os(macOS)
+#elseif canImport(Combine) && canImport(AppKit)
   import Combine
   import AppKit
 

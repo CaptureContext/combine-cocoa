@@ -8,7 +8,7 @@
 
 import Foundation
 
-#if canImport(Combine) && canImport(UIKit)
+#if canImport(Combine) && canImport(UIKit) && !os(watchOS)
   import Combine
   import UIKit
 

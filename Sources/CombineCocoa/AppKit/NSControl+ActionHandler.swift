@@ -1,4 +1,4 @@
-#if canImport(Combine) && os(macOS)
+#if canImport(Combine) && canImport(AppKit)
   import AppKit
 
   extension NSControl {

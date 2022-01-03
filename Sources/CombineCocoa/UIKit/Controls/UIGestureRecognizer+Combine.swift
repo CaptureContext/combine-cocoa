@@ -6,7 +6,7 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if canImport(Combine) && os(iOS)
+#if canImport(Combine) && canImport(UIKit) && !os(watchOS)
   import CombineExtensions
   import UIKit
 
@@ -19,6 +19,7 @@
     }
   }
 
+  #if !os(tvOS)
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   extension PublishersProxy where Base: UIPinchGestureRecognizer {
     /// A publisher which emits when this Pinch Gesture Recognizer is triggered
@@ -34,6 +35,7 @@
       gesturePublisher(for: base)
     }
   }
+  #endif
 
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   extension PublishersProxy where Base: UISwipeGestureRecognizer {
@@ -51,6 +53,7 @@
     }
   }
 
+  #if !os(tvOS)
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   extension PublishersProxy where Base: UIScreenEdgePanGestureRecognizer {
     /// A publisher which emits when this Screen Edge Gesture Recognizer is triggered
@@ -58,6 +61,7 @@
       gesturePublisher(for: base)
     }
   }
+  #endif
 
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   extension PublishersProxy where Base: UILongPressGestureRecognizer {

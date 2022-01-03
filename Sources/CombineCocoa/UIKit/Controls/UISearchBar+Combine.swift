@@ -6,7 +6,7 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if canImport(Combine) && os(iOS)
+#if canImport(Combine) && canImport(UIKit) && !os(watchOS)
   import UIKit
   import CombineExtensions
 
@@ -31,7 +31,8 @@
         .map { _ in () }
         .eraseToAnyPublisher()
     }
-
+    
+    #if !os(tvOS)
     /// Combine wrapper for `UISearchBarDelegate.searchBarCancelButtonClicked(_:)`
     public var cancelButtonClicked: AnyPublisher<Void, Never> {
       let selector = #selector(UISearchBarDelegate.searchBarCancelButtonClicked(_:))
@@ -41,6 +42,7 @@
         .map { _ in () }
         .eraseToAnyPublisher()
     }
+    #endif
 
     private var delegateProxy: UISearchBarDelegateProxy {
       .createDelegateProxy(for: base)

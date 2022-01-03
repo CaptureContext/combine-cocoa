@@ -6,7 +6,7 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if canImport(UIKit) && canImport(Combine)
+#if canImport(UIKit) && canImport(Combine) && !os(watchOS)
   import Foundation
   import UIKit
   import CombineExtensions
@@ -111,7 +111,7 @@
     }
     
     public func didEndDeceleratingAtCell(
-      _ strategy: UICollectionViewActiveCellDetectionStrategy
+      _ strategy: UICollectionViewActiveCellDetectionStrategy = .largestVisible
     ) -> AnyPublisher<UICollectionViewCell?, Never> {
       Publishers.Merge3(
         didEndDecelerating,
@@ -149,7 +149,7 @@
       return UICollectionViewActiveCellDetectionStrategy(_detect: strategy)
     }
     
-    public static var largestVisibleCell: Self {
+    public static var largestVisible: Self {
       .custom { collectionView in
         return collectionView.visibleCells.sorted { cell1, cell2 in
           func area(for view: UIView, in superview: UIView) -> CGFloat {
