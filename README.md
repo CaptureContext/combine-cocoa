@@ -4,6 +4,8 @@
 
 Cocoa extensions for Apple Combine framework.
 
+> NOTE: The package is early beta
+
 ### TODO
 
 - [x] CombineControlEvent
@@ -21,3 +23,37 @@ Cocoa extensions for Apple Combine framework.
   - [x] UITextView
   - [x] Keyboard
   - [x] AnimatedAssignSubscriber (_might be improved_)
+
+
+
+## Installation
+
+### Basic
+
+You can add CombineCocoa to an Xcode project by adding it as a package dependency.
+
+1. From the **File** menu, select **Swift Packages › Add Package Dependency…**
+2. Enter [`"https://github.com/capturecontext/combine-cocoa.git"`](https://github.com/capturecontext/combine-cocoa.git) into the package repository URL text field
+3. Choose products you need to link them to your project.
+
+### Recommended
+
+If you use SwiftPM for your project, you can add CombineCocoa to your package file.
+
+```swift
+.package(
+  name: "combine-cocoa",
+  url: "https://github.com/capturecontext/combine-cocoa.git", 
+  .upToNextMinor(from: "0.0.2")
+)
+```
+
+Do not forget about target dependencies:
+
+```swift
+.product(
+  name: "CombineCocoa", 
+  package: "combine-cocoa"
+)
+```
+
