@@ -78,7 +78,7 @@
       }
     }
   }
-#elseif canImport(Combine) && canImport(AppKit)
+#elseif canImport(Combine) && os(macOS)
   import Combine
   import Foundation
   import AppKit
@@ -119,7 +119,7 @@
       SubscriberType: Subscriber
     >: Combine.Subscription where SubscriberType.Input == Void {
       private let id = UUID()
-      private let handler: Control.ActionHandler
+      private let handler: NSControl.ActionHandler
       private var subscriber: SubscriberType?
       private let control: Control
       private let events: NSEvent.EventTypeMask
@@ -129,10 +129,10 @@
         self.control = control
         self.events = events
 
-        if let handler = control.target as? Control.ActionHandler {
+        if let handler = control.target as? NSControl.ActionHandler {
           self.handler = handler
         } else {
-          self.handler = Control.ActionHandler()
+          self.handler = NSControl.ActionHandler()
         }
 
         handler.setAction(forKey: id, events: events, value: eventHandler)

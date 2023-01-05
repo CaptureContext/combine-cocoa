@@ -20,7 +20,7 @@
       ).eraseToAnyPublisher()
     }
   }
-#elseif canImport(Combine) && canImport(AppKit)
+#elseif canImport(Combine) && os(macOS)
   import Combine
   import AppKit
 

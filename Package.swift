@@ -19,7 +19,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/capturecontext/combine-extensions.git",
-      .upToNextMinor(from: "0.0.3")
+      .upToNextMinor(from: "0.0.5")
     )
   ],
   targets: [
