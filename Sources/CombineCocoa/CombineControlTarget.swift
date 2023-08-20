@@ -62,7 +62,7 @@
   // MARK: - Subscription
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   extension Combine.Publishers.ControlTarget {
-    private final class Subscription<S: Subscriber, Control: AnyObject>: Combine.Subscription
+    private final class Subscription<S: Subscriber>: Combine.Subscription
     where S.Input == Void {
       private var subscriber: S?
       weak private var control: Control?

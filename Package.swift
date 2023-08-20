@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.8
 
 import PackageDescription
 
@@ -19,7 +19,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/capturecontext/combine-extensions.git",
-      .upToNextMinor(from: "0.0.5")
+      .upToNextMinor(from: "0.1.0")
     )
   ],
   targets: [

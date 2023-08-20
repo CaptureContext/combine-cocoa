@@ -1,6 +1,6 @@
 # combine-cocoa
 
-[![SwiftPM 5.3](https://img.shields.io/badge/swiftpm-5.3-ED523F.svg?style=flat)](https://swift.org/download/) ![Platforms](https://img.shields.io/badge/Platforms-iOS_13_|_macOS_10.15_|_tvOS_14_|_watchOS_7-ED523F.svg?style=flat) [![@maximkrouk](https://img.shields.io/badge/contact-@capturecontext-1DA1F2.svg?style=flat&logo=twitter)](https://twitter.com/capture_context) 
+[![SwiftPM 5.8](https://img.shields.io/badge/swiftpm-5.8-ED523F.svg?style=flat)](https://swift.org/download/) ![Platforms](https://img.shields.io/badge/Platforms-iOS_13_|_macOS_10.15_|_tvOS_14_|_watchOS_7-ED523F.svg?style=flat) [![@maximkrouk](https://img.shields.io/badge/contact-@capturecontext-1DA1F2.svg?style=flat&logo=twitter)](https://twitter.com/capture_context) 
 
 Cocoa extensions for Apple Combine framework.
 
@@ -24,8 +24,6 @@ Cocoa extensions for Apple Combine framework.
   - [x] Keyboard
   - [x] AnimatedAssignSubscriber (_might be improved_)
 
-
-
 ## Installation
 
 ### Basic
@@ -44,7 +42,7 @@ If you use SwiftPM for your project, you can add CombineCocoa to your package fi
 .package(
   name: "combine-cocoa",
   url: "https://github.com/capturecontext/combine-cocoa.git", 
-  .upToNextMinor(from: "0.0.2")
+  .upToNextMinor(from: "0.1.0")
 )
 ```
 
@@ -56,8 +54,6 @@ Do not forget about target dependencies:
   package: "combine-cocoa"
 )
 ```
-
-
 
 ## License
 
