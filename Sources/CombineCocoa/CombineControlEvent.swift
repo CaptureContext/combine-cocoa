@@ -12,7 +12,7 @@
   import UIKit
 
   // MARK: - Publisher
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension Combine.Publishers {
     /// A Control Event is a publisher that emits whenever the provided
     /// Control Events fire.
@@ -50,7 +50,7 @@
   }
 
   // MARK: - Subscription
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension Combine.Publishers.ControlEvent {
     private final class Subscription<
       SubscriberType: Subscriber
@@ -84,7 +84,7 @@
   import AppKit
 
   // MARK: - Publisher
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension Combine.Publishers {
     /// A Control Event is a publisher that emits whenever the provided
     /// Control Events fire.
@@ -113,7 +113,7 @@
   }
 
   // MARK: - Subscription
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension Combine.Publishers.ControlEvent {
     public final class Subscription<
       SubscriberType: Subscriber

@@ -10,7 +10,7 @@
   import CombineExtensions
   import UIKit
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension PublishersProxy where Base: UIBarButtonItem {
     /// A publisher which emits whenever this UIBarButtonItem is tapped.
     public var tap: AnyPublisher<Void, Never> {

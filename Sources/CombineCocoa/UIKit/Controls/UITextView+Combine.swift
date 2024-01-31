@@ -10,7 +10,7 @@
   import UIKit
   import CombineExtensions
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension PublishersProxy where Base: UITextView {
     /// A Combine publisher for the `UITextView's` value.
     ///

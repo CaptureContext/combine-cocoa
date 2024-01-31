@@ -13,7 +13,7 @@ import Foundation
   import UIKit
 
   /// A list of animations that can be used with `Publisher.assign(to:on:animation:)`
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   public enum AssignTransition {
     public enum Direction {
       case top, bottom, left, right
@@ -34,7 +34,7 @@ import Foundation
     )
   }
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension Publisher where Self.Failure == Never {
     /// Behaves identically to `Publisher.assign(to:on:)` except that it allows the user to
     /// "wrap" emitting output in an animation transition.

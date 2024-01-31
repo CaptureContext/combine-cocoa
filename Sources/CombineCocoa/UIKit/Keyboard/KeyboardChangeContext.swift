@@ -35,7 +35,6 @@
     /// Indicates whether the change is triggered locally. Used in iPad
     /// multitasking, where all foreground apps would be notified of any changes
     /// in the system keyboard's frame.
-    @available(iOS 9.0, *)
     public var isLocal: Bool {
       return base[UIResponder.keyboardIsLocalUserInfoKey] as! Bool
     }

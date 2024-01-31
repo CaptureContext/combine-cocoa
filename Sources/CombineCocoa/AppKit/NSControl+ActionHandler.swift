@@ -2,7 +2,6 @@
   import AppKit
 
   extension NSControl {
-    @available(macOS 10.10.3, *)
     internal class ActionHandler: NSObject {
       private var actions: [AnyHashable: () -> Void] = [:]
 
@@ -35,7 +34,6 @@
   }
 
   extension NSEvent.EventTypeMask {
-    @available(macOS 10.10.3, *)
     internal func intersects(_ event: NSEvent?) -> Bool {
       return event?.associatedEventsMask.intersection(self).isEmpty == false
     }

@@ -7,133 +7,141 @@
 //
 
 #if canImport(UIKit) && canImport(Combine) && !os(watchOS)
-  import Foundation
-  import UIKit
-  import CombineExtensions
+import Foundation
+import UIKit
+import CombineExtensions
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  extension PublishersProxy where Base: UITableView {
-    /// Combine wrapper for `tableView(_:willDisplay:forRowAt:)`
-    public var willDisplayCell: AnyPublisher<(cell: UITableViewCell, indexPath: IndexPath), Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:willDisplay:forRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { ($0[1] as! UITableViewCell, $0[2] as! IndexPath) }
-        .eraseToAnyPublisher()
-    }
 
-    /// Combine wrapper for `tableView(_:willDisplayHeaderView:forSection:)`
-    public var willDisplayHeaderView: AnyPublisher<(headerView: UIView, section: Int), Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:willDisplayHeaderView:forSection:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { ($0[1] as! UIView, $0[2] as! Int) }
-        .eraseToAnyPublisher()
-    }
+extension PublishersProxy where Base: UITableView {
+	/// Combine wrapper for `tableView(_:willDisplay:forRowAt:)`
+	public var willDisplayCell: some Publisher<(cell: UITableViewCell, indexPath: IndexPath), Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UITableViewDelegate.tableView(_:willDisplay:forRowAt:)),
+			signature: base.delegate?.tableView(_:willDisplay:forRowAt:)
+		)
+		return delegateProxy.proxy_intercept(selector).map { ($0.args.1, $0.args.2) }
+	}
 
-    /// Combine wrapper for `tableView(_:willDisplayFooterView:forSection:)`
-    public var willDisplayFooterView: AnyPublisher<(footerView: UIView, section: Int), Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:willDisplayFooterView:forSection:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { ($0[1] as! UIView, $0[2] as! Int) }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:willDisplayHeaderView:forSection:)`
+	public var willDisplayHeaderView: some Publisher<(headerView: UIView, section: Int), Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UITableViewDelegate.tableView(_:willDisplayHeaderView:forSection:)),
+			signature: base.delegate?.tableView(_:willDisplayHeaderView:forSection:)
+		)
+		return delegateProxy.proxy_intercept(selector).map { ($0.args.1, $0.args.2) }
+	}
 
-    /// Combine wrapper for `tableView(_:didEndDisplaying:forRowAt:)`
-    public var didEndDisplayingCell:
-      AnyPublisher<(cell: UITableViewCell, indexPath: IndexPath), Never>
-    {
-      let selector = #selector(UITableViewDelegate.tableView(_:didEndDisplaying:forRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { ($0[1] as! UITableViewCell, $0[2] as! IndexPath) }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:willDisplayFooterView:forSection:)`
+	public var willDisplayFooterView: some Publisher<(footerView: UIView, section: Int), Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:willDisplayFooterView:forSection:)),
+				signature: base.delegate?.tableView(_:willDisplayFooterView:forSection:)
+			)
+		return delegateProxy.proxy_intercept(selector).map { ($0.args.1, $0.args.2) }
+	}
 
-    /// Combine wrapper for `tableView(_:didEndDisplayingHeaderView:forSection:)`
-    public var didEndDisplayingHeaderView: AnyPublisher<(headerView: UIView, section: Int), Never> {
-      let selector = #selector(
-        UITableViewDelegate.tableView(_:didEndDisplayingHeaderView:forSection:)
-      )
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { ($0[1] as! UIView, $0[2] as! Int) }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:didEndDisplaying:forRowAt:)`
+	public var didEndDisplayingCell: some Publisher<
+		(cell: UITableViewCell, indexPath: IndexPath),
+		Never
+	> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:didEndDisplaying:forRowAt:)),
+				signature: base.delegate?.tableView(_:didEndDisplaying:forRowAt:)
+			)
+		return delegateProxy.proxy_intercept(selector).map { ($0.args.1, $0.args.2) }
+	}
 
-    /// Combine wrapper for `tableView(_:didEndDisplayingFooterView:forSection:)`
-    public var didEndDisplayingFooterView: AnyPublisher<(headerView: UIView, section: Int), Never> {
-      let selector = #selector(
-        UITableViewDelegate.tableView(_:didEndDisplayingFooterView:forSection:)
-      )
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { ($0[1] as! UIView, $0[2] as! Int) }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:didEndDisplayingHeaderView:forSection:)`
+	public var didEndDisplayingHeaderView: some Publisher<(headerView: UIView, section: Int), Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UITableViewDelegate.tableView(_:didEndDisplayingHeaderView:forSection:)),
+			signature: base.delegate?.tableView(_:didEndDisplayingHeaderView:forSection:)
+		)
+		return delegateProxy.proxy_intercept(selector).map { ($0.args.1, $0.args.2) }
+	}
 
-    /// Combine wrapper for `tableView(_:accessoryButtonTappedForRowWith:)`
-    public var itemAccessoryButtonTapped: AnyPublisher<IndexPath, Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:accessoryButtonTappedForRowWith:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! IndexPath }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:didEndDisplayingFooterView:forSection:)`
+	public var didEndDisplayingFooterView: some Publisher<(headerView: UIView, section: Int), Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UITableViewDelegate.tableView(_:didEndDisplayingFooterView:forSection:)),
+			signature: base.delegate?.tableView(_:didEndDisplayingFooterView:forSection:)
+		)
+		return delegateProxy.proxy_intercept(selector).map { ($0.args.1, $0.args.2) }
+	}
 
-    /// Combine wrapper for `tableView(_:didHighlightRowAt:)`
-    public var didHighlightRow: AnyPublisher<IndexPath, Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:didHighlightRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! IndexPath }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:accessoryButtonTappedForRowWith:)`
+	public var itemAccessoryButtonTapped: some Publisher<IndexPath, Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:accessoryButtonTappedForRowWith:)),
+				signature: base.delegate?.tableView(_:accessoryButtonTappedForRowWith:)
+			)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
 
-    /// Combine wrapper for `tableView(_:didUnHighlightRowAt:)`
-    public var didUnhighlightRow: AnyPublisher<IndexPath, Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:didUnhighlightRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! IndexPath }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:didHighlightRowAt:)`
+	public var didHighlightRow: some Publisher<IndexPath, Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:didHighlightRowAt:)),
+				signature: base.delegate?.tableView(_:didHighlightRowAt:)
+			)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
 
-    /// Combine wrapper for `tableView(_:didSelectRowAt:)`
-    public var didSelectRow: AnyPublisher<IndexPath, Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:didSelectRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! IndexPath }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:didUnHighlightRowAt:)`
+	public var didUnhighlightRow: some Publisher<IndexPath, Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:didUnhighlightRowAt:)),
+				signature: base.delegate?.tableView(_:didUnhighlightRowAt:)
+			)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
 
-    /// Combine wrapper for `tableView(_:didDeselectRowAt:)`
-    public var didDeselectRow: AnyPublisher<IndexPath, Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:didDeselectRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! IndexPath }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:didSelectRowAt:)`
+	public var didSelectRow: some Publisher<IndexPath, Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:didSelectRowAt:)),
+				signature: base.delegate?.tableView(_:didSelectRowAt:)
+			)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
 
-    #if !os(tvOS)
-    /// Combine wrapper for `tableView(_:willBeginEditingRowAt:)`
-    public var willBeginEditingRow: AnyPublisher<IndexPath, Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:willBeginEditingRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! IndexPath }
-        .eraseToAnyPublisher()
-    }
+	/// Combine wrapper for `tableView(_:didDeselectRowAt:)`
+	public var didDeselectRow: some Publisher<IndexPath, Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:didDeselectRowAt:)),
+				signature: base.delegate?.tableView(_:didDeselectRowAt:)
+			)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
 
-    /// Combine wrapper for `tableView(_:didEndEditingRowAt:)`
-    public var didEndEditingRow: AnyPublisher<IndexPath, Never> {
-      let selector = #selector(UITableViewDelegate.tableView(_:didEndEditingRowAt:))
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! IndexPath }
-        .eraseToAnyPublisher()
-    }
-    #endif
+	#if !os(tvOS)
+	/// Combine wrapper for `tableView(_:willBeginEditingRowAt:)`
+	public var willBeginEditingRow: some Publisher<IndexPath, Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:willBeginEditingRowAt:)),
+				signature: base.delegate?.tableView(_:willBeginEditingRowAt:)
+			)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
 
-    public var delegateProxy: TableViewDelegateProxy {
-      .createDelegateProxy(for: base)
-    }
-  }
+	/// Combine wrapper for `tableView(_:didEndEditingRowAt:)`
+	public var didEndEditingRow: some Publisher<IndexPath?, Never> {
+		let selector = _makeMethodSelector(
+				selector: #selector(UITableViewDelegate.tableView(_:didEndEditingRowAt:)),
+				signature: base.delegate?.tableView(_:didEndEditingRowAt:)
+			)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
+	#endif
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  open class TableViewDelegateProxy: ScrollViewDelegateProxy, UITableViewDelegate {
-    public func setDelegate(to object: UITableView) {
-      object.delegate = self
-    }
-  }
+	public var delegateProxy: TableViewDelegateProxy {
+		.proxy(for: base, \.delegate)
+	}
+}
+
+open class TableViewDelegateProxy:
+	DelegateProxy<UITableViewDelegate>,
+	UITableViewDelegate
+{}
 #endif

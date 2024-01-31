@@ -11,7 +11,7 @@
   import Foundation
 
   // MARK: - Publisher
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension Combine.Publishers {
     /// A publisher which wraps objects that use the Target & Action mechanism,
     /// for example - a UIBarButtonItem which isn't KVO-compliant and doesn't use UIControlEvent(s).
@@ -60,7 +60,7 @@
   }
 
   // MARK: - Subscription
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension Combine.Publishers.ControlTarget {
     private final class Subscription<S: Subscriber>: Combine.Subscription
     where S.Input == Void {

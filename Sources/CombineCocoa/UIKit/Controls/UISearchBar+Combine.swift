@@ -7,52 +7,45 @@
 //
 
 #if canImport(Combine) && canImport(UIKit) && !os(watchOS)
-  import UIKit
-  import CombineExtensions
+import UIKit
+import CombineExtensions
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  extension PublishersProxy where Base: UISearchBar {
-    /// Combine wrapper for `UISearchBarDelegate.searchBar(_:textDidChange:)`
-    public var textDidChange: AnyPublisher<String, Never> {
-      let selector = #selector(UISearchBarDelegate.searchBar(_:textDidChange:))
-      return
-        delegateProxy
-        .interceptSelectorPublisher(selector)
-        .map { $0[1] as! String }
-        .eraseToAnyPublisher()
-    }
 
-    /// Combine wrapper for `UISearchBarDelegate.searchBarSearchButtonClicked(_:)`
-    public var searchButtonClicked: AnyPublisher<Void, Never> {
-      let selector = #selector(UISearchBarDelegate.searchBarSearchButtonClicked(_:))
-      return
-        delegateProxy
-        .interceptSelectorPublisher(selector)
-        .map { _ in () }
-        .eraseToAnyPublisher()
-    }
-    
-    #if !os(tvOS)
-    /// Combine wrapper for `UISearchBarDelegate.searchBarCancelButtonClicked(_:)`
-    public var cancelButtonClicked: AnyPublisher<Void, Never> {
-      let selector = #selector(UISearchBarDelegate.searchBarCancelButtonClicked(_:))
-      return
-        delegateProxy
-        .interceptSelectorPublisher(selector)
-        .map { _ in () }
-        .eraseToAnyPublisher()
-    }
-    #endif
+extension PublishersProxy where Base: UISearchBar {
+	/// Combine wrapper for `UISearchBarDelegate.searchBar(_:textDidChange:)`
+	public var textDidChange: some Publisher<String, Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UISearchBarDelegate.searchBar(_:textDidChange:)),
+			signature: base.delegate?.searchBar(_:textDidChange:)
+		)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
 
-    private var delegateProxy: UISearchBarDelegateProxy {
-      .createDelegateProxy(for: base)
-    }
-  }
+	/// Combine wrapper for `UISearchBarDelegate.searchBarSearchButtonClicked(_:)`
+	public var searchButtonClicked: some Publisher<Void, Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UISearchBarDelegate.searchBarSearchButtonClicked(_:)),
+			signature: base.delegate?.searchBarSearchButtonClicked(_:)
+		)
+		return delegateProxy.proxy_intercept(selector).replaceOutput(with: ())
+	}
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  private class UISearchBarDelegateProxy: DelegateProxy, UISearchBarDelegate, DelegateProxyType {
-    func setDelegate(to object: UISearchBar) {
-      object.delegate = self
-    }
-  }
+	#if !os(tvOS)
+	/// Combine wrapper for `UISearchBarDelegate.searchBarCancelButtonClicked(_:)`
+	public var cancelButtonClicked: some Publisher<Void, Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UISearchBarDelegate.searchBarCancelButtonClicked(_:)),
+			signature: base.delegate?.searchBarCancelButtonClicked(_:)
+		)
+		return delegateProxy.proxy_intercept(selector).replaceOutput(with: ())
+	}
+	#endif
+
+	private var delegateProxy: UISearchBarDelegateProxy {
+		.proxy(for: base, \.delegate)
+	}
+}
+
+
+private class UISearchBarDelegateProxy: DelegateProxy<UISearchBarDelegate>, UISearchBarDelegate {}
 #endif

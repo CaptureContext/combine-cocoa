@@ -10,7 +10,7 @@
   import CombineExtensions
   import UIKit
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension UIControl {
     /// A publisher emitting events from this control.
     public func publisher(for events: UIControl.Event) -> AnyPublisher<Void, Never> {
@@ -24,7 +24,7 @@
   import Combine
   import AppKit
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  
   extension NSControl {
     /// A publisher emitting events from this control.
     public func publisher(for events: NSEvent.EventTypeMask) -> AnyPublisher<Void, Never> {
