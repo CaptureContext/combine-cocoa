@@ -15,12 +15,16 @@ let package = Package(
 		.library(
 			name: "CombineCocoa",
 			targets: ["CombineCocoa"]
+		),
+		.library(
+			name: "CombineCocoaMacros",
+			targets: ["CombineCocoaMacros"]
 		)
 	],
 	dependencies: [
 		.package(
 			url: "https://github.com/capturecontext/combine-extensions.git",
-			branch: "0.2.0-alpha"
+			.upToNextMinor(from: "0.2.0")
 		),
 	],
 	targets: [
@@ -32,6 +36,16 @@ let package = Package(
 					package: "combine-extensions"
 				)
 			]
-		)
+		),
+		.target(
+			name: "CombineCocoaMacros",
+			dependencies: [
+				.target(name: "CombineCocoa"),
+				.product(
+					name: "CombineExtensionsMacros",
+					package: "combine-extensions"
+				)
+			]
+		),
 	]
 )
