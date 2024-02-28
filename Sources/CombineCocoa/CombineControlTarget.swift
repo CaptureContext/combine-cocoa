@@ -7,95 +7,95 @@
 //
 
 #if canImport(Combine)
-  import Combine
-  import Foundation
+import Combine
+import Foundation
 
-  // MARK: - Publisher
-  
-  extension Combine.Publishers {
-    /// A publisher which wraps objects that use the Target & Action mechanism,
-    /// for example - a UIBarButtonItem which isn't KVO-compliant and doesn't use UIControlEvent(s).
-    ///
-    /// Instead, you pass in a generic Control, and two functions:
-    /// One to add a target action to the provided control, and a second one to
-    /// remove a target action from a provided control.
-    public struct ControlTarget<Control: AnyObject>: Publisher {
-      public typealias Output = Void
-      public typealias Failure = Never
+// MARK: - Publisher
 
-      private let control: Control
-      private let addTargetAction: (Control, AnyObject, Selector) -> Void
-      private let removeTargetAction: (Control?, AnyObject, Selector) -> Void
+extension Combine.Publishers {
+	/// A publisher which wraps objects that use the Target & Action mechanism,
+	/// for example - a UIBarButtonItem which isn't KVO-compliant and doesn't use UIControlEvent(s).
+	///
+	/// Instead, you pass in a generic Control, and two functions:
+	/// One to add a target action to the provided control, and a second one to
+	/// remove a target action from a provided control.
+	public struct ControlTarget<Control: AnyObject>: Publisher {
+		public typealias Output = Void
+		public typealias Failure = Never
 
-      /// Initialize a publisher that emits a Void whenever the
-      /// provided control fires an action.
-      ///
-      /// - parameter control: UI Control.
-      /// - parameter addTargetAction: A function which accepts the Control, a Target and a Selector and
-      ///                              responsible to add the target action to the provided control.
-      /// - parameter removeTargetAction: A function which accepts the Control, a Target and a Selector and it
-      ///                                 responsible to remove the target action from the provided control.
-      public init(
-        control: Control,
-        addTargetAction: @escaping (Control, AnyObject, Selector) -> Void,
-        removeTargetAction: @escaping (Control?, AnyObject, Selector) -> Void
-      ) {
-        self.control = control
-        self.addTargetAction = addTargetAction
-        self.removeTargetAction = removeTargetAction
-      }
+		private let control: Control
+		private let addTargetAction: (Control, AnyObject, Selector) -> Void
+		private let removeTargetAction: (Control?, AnyObject, Selector) -> Void
 
-      public func receive<S: Subscriber>(subscriber: S)
-      where S.Failure == Failure, S.Input == Output {
-        let subscription = Subscription(
-          subscriber: subscriber,
-          control: control,
-          addTargetAction: addTargetAction,
-          removeTargetAction: removeTargetAction
-        )
+		/// Initialize a publisher that emits a Void whenever the
+		/// provided control fires an action.
+		///
+		/// - parameter control: UI Control.
+		/// - parameter addTargetAction: A function which accepts the Control, a Target and a Selector and
+		///                              responsible to add the target action to the provided control.
+		/// - parameter removeTargetAction: A function which accepts the Control, a Target and a Selector and it
+		///                                 responsible to remove the target action from the provided control.
+		public init(
+			control: Control,
+			addTargetAction: @escaping (Control, AnyObject, Selector) -> Void,
+			removeTargetAction: @escaping (Control?, AnyObject, Selector) -> Void
+		) {
+			self.control = control
+			self.addTargetAction = addTargetAction
+			self.removeTargetAction = removeTargetAction
+		}
 
-        subscriber.receive(subscription: subscription)
-      }
-    }
-  }
+		public func receive<S: Subscriber>(subscriber: S)
+		where S.Failure == Failure, S.Input == Output {
+			let subscription = Subscription(
+				subscriber: subscriber,
+				control: control,
+				addTargetAction: addTargetAction,
+				removeTargetAction: removeTargetAction
+			)
 
-  // MARK: - Subscription
-  
-  extension Combine.Publishers.ControlTarget {
-    private final class Subscription<S: Subscriber>: Combine.Subscription
-    where S.Input == Void {
-      private var subscriber: S?
-      weak private var control: Control?
+			subscriber.receive(subscription: subscription)
+		}
+	}
+}
 
-      private let removeTargetAction: (Control?, AnyObject, Selector) -> Void
-      private let action = #selector(handleAction)
+// MARK: - Subscription
 
-      init(
-        subscriber: S,
-        control: Control,
-        addTargetAction: @escaping (Control, AnyObject, Selector) -> Void,
-        removeTargetAction: @escaping (Control?, AnyObject, Selector) -> Void
-      ) {
-        self.subscriber = subscriber
-        self.control = control
-        self.removeTargetAction = removeTargetAction
+extension Combine.Publishers.ControlTarget {
+	private final class Subscription<S: Subscriber>: Combine.Subscription
+	where S.Input == Void {
+		private var subscriber: S?
+		weak private var control: Control?
 
-        addTargetAction(control, self, action)
-      }
+		private let removeTargetAction: (Control?, AnyObject, Selector) -> Void
+		private let action = #selector(handleAction)
 
-      func request(_ demand: Subscribers.Demand) {
-        // We don't care about the demand at this point.
-        // As far as we're concerned - The control's target events are endless until it is deallocated.
-      }
+		init(
+			subscriber: S,
+			control: Control,
+			addTargetAction: @escaping (Control, AnyObject, Selector) -> Void,
+			removeTargetAction: @escaping (Control?, AnyObject, Selector) -> Void
+		) {
+			self.subscriber = subscriber
+			self.control = control
+			self.removeTargetAction = removeTargetAction
 
-      func cancel() {
-        subscriber = nil
-        removeTargetAction(control, self, action)
-      }
+			addTargetAction(control, self, action)
+		}
+		
+		func request(_ demand: Subscribers.Demand) {
+			// We don't care about the demand at this point.
+			// As far as we're concerned - The control's target events are endless until it is deallocated.
+		}
 
-      @objc private func handleAction() {
-        _ = subscriber?.receive()
-      }
-    }
-  }
+		func cancel() {
+			subscriber = nil
+			removeTargetAction(control, self, action)
+		}
+
+		@objc private func handleAction() {
+			_ = subscriber?.receive()
+		}
+	}
+}
 #endif

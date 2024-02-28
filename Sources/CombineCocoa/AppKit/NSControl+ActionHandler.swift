@@ -1,41 +1,41 @@
 #if canImport(Combine) && os(macOS)
-  import AppKit
+import AppKit
 
-  extension NSControl {
-    internal class ActionHandler: NSObject {
-      private var actions: [AnyHashable: () -> Void] = [:]
+extension NSControl {
+	internal class ActionHandler: NSObject {
+		private var actions: [AnyHashable: () -> Void] = [:]
+		
+		func setAction(
+			forKey key: AnyHashable,
+			events: NSEvent.EventTypeMask,
+			value action: (() -> Void)?
+		) {
+			actions[key] = action.map { action in
+				{ if events.intersects(.current) { action() } }
+			}
+		}
+		
+		@objc private func handle() {
+			actions.values.forEach { $0() }
+		}
+		
+		func attach(to control: NSControl) {
+			control.target = self
+			control.action = #selector(handle)
+			control.sendAction(on: .any)
+		}
+	}
+}
 
-      func setAction(
-        forKey key: AnyHashable,
-        events: NSEvent.EventTypeMask,
-        value action: (() -> Void)?
-      ) {
-        actions[key] = action.map { action in
-          { if events.intersects(.current) { action() } }
-        }
-      }
+extension NSEvent {
+	internal static var current: NSEvent? {
+		NSApplication.shared.currentEvent
+	}
+}
 
-      @objc private func handle() {
-        actions.values.forEach { $0() }
-      }
-
-      func attach(to control: NSControl) {
-        control.target = self
-        control.action = #selector(handle)
-        control.sendAction(on: .any)
-      }
-    }
-  }
-
-  extension NSEvent {
-    internal static var current: NSEvent? {
-      NSApplication.shared.currentEvent
-    }
-  }
-
-  extension NSEvent.EventTypeMask {
-    internal func intersects(_ event: NSEvent?) -> Bool {
-      return event?.associatedEventsMask.intersection(self).isEmpty == false
-    }
-  }
+extension NSEvent.EventTypeMask {
+	internal func intersects(_ event: NSEvent?) -> Bool {
+		return event?.associatedEventsMask.intersection(self).isEmpty == false
+	}
+}
 #endif

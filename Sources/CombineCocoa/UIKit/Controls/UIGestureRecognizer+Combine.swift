@@ -7,89 +7,89 @@
 //
 
 #if canImport(Combine) && canImport(UIKit) && !os(watchOS)
-  import CombineExtensions
-  import UIKit
+import CombineExtensions
+import UIKit
 
-  // MARK: - Gesture Publishers
-  
-  extension PublishersProxy where Base: UITapGestureRecognizer {
-    /// A publisher which emits when this Tap Gesture Recognizer is triggered
-    public var tapGesture: AnyPublisher<UITapGestureRecognizer, Never> {
-      gesturePublisher(for: base)
-    }
-  }
+// MARK: - Gesture Publishers
 
-  #if !os(tvOS)
-  
-  extension PublishersProxy where Base: UIPinchGestureRecognizer {
-    /// A publisher which emits when this Pinch Gesture Recognizer is triggered
-    public var pinchGesture: AnyPublisher<UIPinchGestureRecognizer, Never> {
-      gesturePublisher(for: base)
-    }
-  }
+extension PublishersProxy where Base: UITapGestureRecognizer {
+	/// A publisher which emits when this Tap Gesture Recognizer is triggered
+	public var tapGesture: AnyPublisher<UITapGestureRecognizer, Never> {
+		gesturePublisher(for: base)
+	}
+}
 
-  
-  extension PublishersProxy where Base: UIRotationGestureRecognizer {
-    /// A publisher which emits when this Rotation Gesture Recognizer is triggered
-    public var rotationGesture: AnyPublisher<UIRotationGestureRecognizer, Never> {
-      gesturePublisher(for: base)
-    }
-  }
-  #endif
+#if !os(tvOS)
 
-  
-  extension PublishersProxy where Base: UISwipeGestureRecognizer {
-    /// A publisher which emits when this Swipe Gesture Recognizer is triggered
-    public var swipeGesture: AnyPublisher<UISwipeGestureRecognizer, Never> {
-      gesturePublisher(for: base)
-    }
-  }
+extension PublishersProxy where Base: UIPinchGestureRecognizer {
+	/// A publisher which emits when this Pinch Gesture Recognizer is triggered
+	public var pinchGesture: AnyPublisher<UIPinchGestureRecognizer, Never> {
+		gesturePublisher(for: base)
+	}
+}
 
-  
-  extension PublishersProxy where Base: UIPanGestureRecognizer {
-    /// A publisher which emits when this Pan Gesture Recognizer is triggered
-    public var panGesture: AnyPublisher<UIPanGestureRecognizer, Never> {
-      gesturePublisher(for: base)
-    }
-  }
 
-  #if !os(tvOS)
-  
-  extension PublishersProxy where Base: UIScreenEdgePanGestureRecognizer {
-    /// A publisher which emits when this Screen Edge Gesture Recognizer is triggered
-    public var screenEdgePanGesture: AnyPublisher<UIScreenEdgePanGestureRecognizer, Never> {
-      gesturePublisher(for: base)
-    }
-  }
-  #endif
+extension PublishersProxy where Base: UIRotationGestureRecognizer {
+	/// A publisher which emits when this Rotation Gesture Recognizer is triggered
+	public var rotationGesture: AnyPublisher<UIRotationGestureRecognizer, Never> {
+		gesturePublisher(for: base)
+	}
+}
+#endif
 
-  
-  extension PublishersProxy where Base: UILongPressGestureRecognizer {
-    /// A publisher which emits when this Long Press Recognizer is triggered
-    public var longPressGesture: AnyPublisher<UILongPressGestureRecognizer, Never> {
-      gesturePublisher(for: base)
-    }
-  }
 
-  // MARK: - Private Helpers
+extension PublishersProxy where Base: UISwipeGestureRecognizer {
+	/// A publisher which emits when this Swipe Gesture Recognizer is triggered
+	public var swipeGesture: AnyPublisher<UISwipeGestureRecognizer, Never> {
+		gesturePublisher(for: base)
+	}
+}
 
-  // A private generic helper function which returns the provided
-  // generic publisher whenever its specific event occurs.
-  
-  private func gesturePublisher<Gesture: UIGestureRecognizer>(
-    for gesture: Gesture
-  ) -> AnyPublisher<Gesture, Never> {
-    Publishers.ControlTarget(
-      control: gesture,
-      addTargetAction: { gesture, target, action in
-        gesture.addTarget(target, action: action)
-      },
-      removeTargetAction: { gesture, target, action in
-        gesture?.removeTarget(target, action: action)
-      }
-    )
-    .subscribe(on: DispatchQueue.main)
-    .map { gesture }
-    .eraseToAnyPublisher()
-  }
+
+extension PublishersProxy where Base: UIPanGestureRecognizer {
+	/// A publisher which emits when this Pan Gesture Recognizer is triggered
+	public var panGesture: AnyPublisher<UIPanGestureRecognizer, Never> {
+		gesturePublisher(for: base)
+	}
+}
+
+#if !os(tvOS)
+
+extension PublishersProxy where Base: UIScreenEdgePanGestureRecognizer {
+	/// A publisher which emits when this Screen Edge Gesture Recognizer is triggered
+	public var screenEdgePanGesture: AnyPublisher<UIScreenEdgePanGestureRecognizer, Never> {
+		gesturePublisher(for: base)
+	}
+}
+#endif
+
+
+extension PublishersProxy where Base: UILongPressGestureRecognizer {
+	/// A publisher which emits when this Long Press Recognizer is triggered
+	public var longPressGesture: AnyPublisher<UILongPressGestureRecognizer, Never> {
+		gesturePublisher(for: base)
+	}
+}
+
+// MARK: - Private Helpers
+
+// A private generic helper function which returns the provided
+// generic publisher whenever its specific event occurs.
+
+private func gesturePublisher<Gesture: UIGestureRecognizer>(
+	for gesture: Gesture
+) -> AnyPublisher<Gesture, Never> {
+	Publishers.ControlTarget(
+		control: gesture,
+		addTargetAction: { gesture, target, action in
+			gesture.addTarget(target, action: action)
+		},
+		removeTargetAction: { gesture, target, action in
+			gesture?.removeTarget(target, action: action)
+		}
+	)
+	.subscribe(on: DispatchQueue.main)
+	.map { gesture }
+	.eraseToAnyPublisher()
+}
 #endif

@@ -3,6 +3,7 @@ import UIKit
 import CombineExtensions
 
 extension PublishersProxy where Base: UIViewController {
+
 	public var dismissed: some Publisher<Void, Never> {
 		weak var _base = base
 		var _presentationStackSnapshot: (root: UIViewController, stack: [UIViewController])?
