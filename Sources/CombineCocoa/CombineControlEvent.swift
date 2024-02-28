@@ -7,151 +7,151 @@
 //
 
 #if canImport(Combine) && canImport(UIKit) && !os(watchOS)
-  import Combine
-  import Foundation
-  import UIKit
+import Combine
+import Foundation
+import UIKit
 
-  // MARK: - Publisher
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  extension Combine.Publishers {
-    /// A Control Event is a publisher that emits whenever the provided
-    /// Control Events fire.
-    public struct ControlEvent<Control: UIControl>: Publisher {
-      public typealias Output = Void
-      public typealias Failure = Never
+// MARK: - Publisher
 
-      private let control: Control
-      private let controlEvents: Control.Event
+extension Combine.Publishers {
+	/// A Control Event is a publisher that emits whenever the provided
+	/// Control Events fire.
+	public struct ControlEvent<Control: UIControl>: Publisher {
+		public typealias Output = Void
+		public typealias Failure = Never
 
-      /// Initialize a publisher that emits a Void
-      /// whenever any of the provided Control Events trigger.
-      ///
-      /// - parameter control: UI Control.
-      /// - parameter events: Control Events.
-      public init(
-        control: Control,
-        events: Control.Event
-      ) {
-        self.control = control
-        self.controlEvents = events
-      }
+		private let control: Control
+		private let controlEvents: Control.Event
 
-      public func receive<S: Subscriber>(subscriber: S)
-      where S.Failure == Failure, S.Input == Output {
-        let subscription = Subscription(
-          subscriber: subscriber,
-          control: control,
-          event: controlEvents
-        )
+		/// Initialize a publisher that emits a Void
+		/// whenever any of the provided Control Events trigger.
+		///
+		/// - parameter control: UI Control.
+		/// - parameter events: Control Events.
+		public init(
+			control: Control,
+			events: Control.Event
+		) {
+			self.control = control
+			self.controlEvents = events
+		}
 
-        subscriber.receive(subscription: subscription)
-      }
-    }
-  }
+		public func receive<S: Subscriber>(subscriber: S)
+		where S.Failure == Failure, S.Input == Output {
+			let subscription = Subscription(
+				subscriber: subscriber,
+				control: control,
+				event: controlEvents
+			)
 
-  // MARK: - Subscription
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  extension Combine.Publishers.ControlEvent {
-    private final class Subscription<
-      SubscriberType: Subscriber
-    >: Combine.Subscription where SubscriberType.Input == Void {
-      private var subscriber: SubscriberType?
-      weak private var control: Control?
+			subscriber.receive(subscription: subscription)
+		}
+	}
+}
 
-      init(subscriber: SubscriberType, control: Control, event: Control.Event) {
-        self.subscriber = subscriber
-        self.control = control
-        control.addTarget(self, action: #selector(handleEvent), for: event)
-      }
+// MARK: - Subscription
 
-      func request(_ demand: Subscribers.Demand) {
-        // We don't care about the demand at this point.
-        // As far as we're concerned - UIControl events are endless until the control is deallocated.
-      }
+extension Combine.Publishers.ControlEvent {
+	private final class Subscription<
+		SubscriberType: Subscriber
+	>: Combine.Subscription where SubscriberType.Input == Void {
+		private var subscriber: SubscriberType?
+		weak private var control: Control?
 
-      func cancel() {
-        subscriber = nil
-      }
+		init(subscriber: SubscriberType, control: Control, event: Control.Event) {
+			self.subscriber = subscriber
+			self.control = control
+			control.addTarget(self, action: #selector(handleEvent), for: event)
+		}
 
-      @objc private func handleEvent() {
-        _ = subscriber?.receive()
-      }
-    }
-  }
+		func request(_ demand: Subscribers.Demand) {
+			// We don't care about the demand at this point.
+			// As far as we're concerned - UIControl events are endless until the control is deallocated.
+		}
+
+		func cancel() {
+			subscriber = nil
+		}
+
+		@objc private func handleEvent() {
+			_ = subscriber?.receive()
+		}
+	}
+}
 #elseif canImport(Combine) && os(macOS)
-  import Combine
-  import Foundation
-  import AppKit
+import Combine
+import Foundation
+import AppKit
 
-  // MARK: - Publisher
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  extension Combine.Publishers {
-    /// A Control Event is a publisher that emits whenever the provided
-    /// Control Events fire.
-    public struct ControlEvent<Control: NSControl>: Publisher {
-      public typealias Output = Void
-      public typealias Failure = Never
+// MARK: - Publisher
 
-      let control: Control
-      let controlEvents: NSEvent.EventTypeMask
+extension Combine.Publishers {
+	/// A Control Event is a publisher that emits whenever the provided
+	/// Control Events fire.
+	public struct ControlEvent<Control: NSControl>: Publisher {
+		public typealias Output = Void
+		public typealias Failure = Never
 
-      init(control: Control, events: NSEvent.EventTypeMask) {
-        self.control = control
-        self.controlEvents = events
-      }
+		let control: Control
+		let controlEvents: NSEvent.EventTypeMask
 
-      public func receive<S>(subscriber: S)
-      where S: Subscriber, S.Failure == Failure, S.Input == Output {
-        let subscription = Subscription(
-          subscriber: subscriber,
-          control: control,
-          events: controlEvents
-        )
-        subscriber.receive(subscription: subscription)
-      }
-    }
-  }
+		init(control: Control, events: NSEvent.EventTypeMask) {
+			self.control = control
+			self.controlEvents = events
+		}
 
-  // MARK: - Subscription
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  extension Combine.Publishers.ControlEvent {
-    public final class Subscription<
-      SubscriberType: Subscriber
-    >: Combine.Subscription where SubscriberType.Input == Void {
-      private let id = UUID()
-      private let handler: NSControl.ActionHandler
-      private var subscriber: SubscriberType?
-      private let control: Control
-      private let events: NSEvent.EventTypeMask
+		public func receive<S>(subscriber: S)
+		where S: Subscriber, S.Failure == Failure, S.Input == Output {
+			let subscription = Subscription(
+				subscriber: subscriber,
+				control: control,
+				events: controlEvents
+			)
+			subscriber.receive(subscription: subscription)
+		}
+	}
+}
 
-      init(subscriber: SubscriberType, control: Control, events: NSEvent.EventTypeMask) {
-        self.subscriber = subscriber
-        self.control = control
-        self.events = events
+// MARK: - Subscription
 
-        if let handler = control.target as? NSControl.ActionHandler {
-          self.handler = handler
-        } else {
-          self.handler = NSControl.ActionHandler()
-        }
+extension Combine.Publishers.ControlEvent {
+	public final class Subscription<
+		SubscriberType: Subscriber
+	>: Combine.Subscription where SubscriberType.Input == Void {
+		private let id = UUID()
+		private let handler: NSControl.ActionHandler
+		private var subscriber: SubscriberType?
+		private let control: Control
+		private let events: NSEvent.EventTypeMask
 
-        handler.setAction(forKey: id, events: events, value: eventHandler)
-        self.handler.attach(to: control)
-      }
+		init(subscriber: SubscriberType, control: Control, events: NSEvent.EventTypeMask) {
+			self.subscriber = subscriber
+			self.control = control
+			self.events = events
 
-      public func request(_ demand: Subscribers.Demand) {
-        // We do nothing here as we only want to send events when they occur.
-        // See, for more info: https://developer.apple.com/documentation/combine/subscribers/demand
-      }
+			if let handler = control.target as? NSControl.ActionHandler {
+				self.handler = handler
+			} else {
+				self.handler = NSControl.ActionHandler()
+			}
 
-      public func cancel() {
-        subscriber = nil
-      }
+			handler.setAction(forKey: id, events: events, value: eventHandler)
+			self.handler.attach(to: control)
+		}
 
-      private func eventHandler() {
-        guard events.intersects(.current) else { return }
-        _ = subscriber?.receive()
-      }
-    }
-  }
+		public func request(_ demand: Subscribers.Demand) {
+			// We do nothing here as we only want to send events when they occur.
+			// See, for more info: https://developer.apple.com/documentation/combine/subscribers/demand
+		}
+
+		public func cancel() {
+			subscriber = nil
+		}
+
+		private func eventHandler() {
+			guard events.intersects(.current) else { return }
+			_ = subscriber?.receive()
+		}
+	}
+}
 #endif

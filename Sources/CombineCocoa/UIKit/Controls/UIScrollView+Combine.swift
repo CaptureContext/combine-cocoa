@@ -7,72 +7,61 @@
 //
 
 #if canImport(Combine) && canImport(UIKit) && !os(watchOS)
-  import UIKit
-  import CombineExtensions
+import UIKit
+import CombineExtensions
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  extension PublishersProxy where Base: UIScrollView {
 
-    /// A publisher emitting if the bottom of the UIScrollView is reached.
-    ///
-    /// - parameter offset: A threshold indicating how close to the bottom of the UIScrollView this publisher should emit.
-    ///                     Defaults to 0
-    /// - returns: A publisher that emits when the bottom of the UIScrollView is reached within the provided threshold.
-    public func reachedBottom(offset: CGFloat = 0) -> AnyPublisher<Void, Never> {
-      base.publisher(for: \.contentOffset)
-        .map { [weak base] contentOffset -> Bool in
-          guard let base = base else { return false }
-          let visibleHeight = base.frame.height - base.contentInset.top - base.contentInset.bottom
-          let yDelta = contentOffset.y + base.contentInset.top
-          let threshold = max(offset, base.contentSize.height - visibleHeight)
-          return yDelta > threshold
-        }
-        .removeDuplicates()
-        .filter { $0 }
-        .map { _ in () }
-        .eraseToAnyPublisher()
-    }
-    
-    public var didEndDecelerating: AnyPublisher<Void, Never> {
-      let selector = #selector(UIScrollViewDelegate.scrollViewDidEndDecelerating)
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { _ in }
-        .eraseToAnyPublisher()
-    }
-    
-    public var didEndDragging: AnyPublisher<Bool, Never> {
-      let selector = #selector(UIScrollViewDelegate.scrollViewDidEndDragging)
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { $0[1] as! Bool }
-        .eraseToAnyPublisher()
-    }
-    
-    public var didEndScrollingAnimation: AnyPublisher<Void, Never> {
-      let selector = #selector(UIScrollViewDelegate.scrollViewDidEndScrollingAnimation)
-      return delegateProxy.interceptSelectorPublisher(selector)
-        .map { _ in }
-        .eraseToAnyPublisher()
-    }
-    
-    public var delegateProxy: ScrollViewDelegateProxy {
-      if let base = base as? UITableView {
-        return TableViewDelegateProxy.createDelegateProxy(for: base)
-      } else if let base = base as? UICollectionView {
-        return CollectionViewDelegateProxy.createDelegateProxy(for: base)
-      } else {
-        return ScrollViewDelegateProxy.createDelegateProxy(for: base)
-      }
-    }
-  }
+extension PublishersProxy where Base: UIScrollView {
 
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  open class ScrollViewDelegateProxy:
-    DelegateProxy,
-    UIScrollViewDelegate,
-    DelegateProxyType
-  {
-    public func setDelegate(to object: UIScrollView) {
-      object.delegate = self
-    }
-  }
+	/// A publisher emitting if the bottom of the UIScrollView is reached.
+	///
+	/// - parameter offset: A threshold indicating how close to the bottom of the UIScrollView this publisher should emit.
+	///                     Defaults to 0
+	/// - returns: A publisher that emits when the bottom of the UIScrollView is reached within the provided threshold.
+	public func reachedBottom(offset: CGFloat = 0) -> some Publisher<Void, Never> {
+		base.publisher(for: \.contentOffset)
+			.map { [weak base] contentOffset -> Bool in
+				guard let base = base else { return false }
+				let visibleHeight = base.frame.height - base.contentInset.top - base.contentInset.bottom
+				let yDelta = contentOffset.y + base.contentInset.top
+				let threshold = max(offset, base.contentSize.height - visibleHeight)
+				return yDelta > threshold
+			}
+			.removeDuplicates()
+			.compactMap { $0 ? () : nil }
+	}
+
+	public var didEndDecelerating: some Publisher<Void, Never> {
+		let selector = #selector(UIScrollViewDelegate.scrollViewDidEndDecelerating)
+		return delegateProxy.proxy_intercept(selector).replaceOutput(with: ())
+	}
+
+	public var didEndDragging: some Publisher<Bool, Never> {
+		let selector = _makeMethodSelector(
+			selector: #selector(UIScrollViewDelegate.scrollViewDidEndDragging),
+			signature: base.delegate?.scrollViewDidEndDragging
+		)
+		return delegateProxy.proxy_intercept(selector).map(\.args.1)
+	}
+
+	public var didEndScrollingAnimation: some Publisher<Void, Never> {
+		let selector = #selector(UIScrollViewDelegate.scrollViewDidEndDecelerating)
+		return delegateProxy.proxy_intercept(selector).replaceOutput(with: ())
+	}
+
+	public var delegateProxy: AnyDelegateProxy {
+		if let base = base as? UITableView {
+			return TableViewDelegateProxy.proxy(for: base, \.delegate)
+		} else if let base = base as? UICollectionView {
+			return CollectionViewDelegateProxy.proxy(for: base, \.delegate)
+		} else {
+			return ScrollViewDelegateProxy.proxy(for: base, \.delegate)
+		}
+	}
+}
+
+open class ScrollViewDelegateProxy:
+	DelegateProxy<UIScrollViewDelegate>,
+	UIScrollViewDelegate
+{}
 #endif
