@@ -1,0 +1,30 @@
+version: 1
+builder:
+  configs:
+  - platform: ios
+    scheme: CombineCocoa
+    documentation_targets:
+      - CombineCocoa
+
+  - platform: macos-spm
+    scheme: CombineCocoa
+    documentation_targets:
+      - CombineCocoa
+
+  - platform: tvos
+    scheme: CombineCocoa
+    documentation_targets:
+      - CombineCocoa
+
+  - platform: watchos
+    scheme: CombineCocoa
+    documentation_targets:
+      - CombineCocoa
+
+  - platform: visionOS
+    scheme: CombineCocoa
+    documentation_targets:
+      - CombineCocoa
+
+  - platform: macos-xcodebuild
+    scheme: CombineCocoa
