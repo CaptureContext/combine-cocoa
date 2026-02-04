@@ -20,7 +20,6 @@ extension PublishersProxy where Base: UITapGestureRecognizer {
 }
 
 #if !os(tvOS)
-
 extension PublishersProxy where Base: UIPinchGestureRecognizer {
 	/// A publisher which emits when this Pinch Gesture Recognizer is triggered
 	public var pinchGesture: AnyPublisher<UIPinchGestureRecognizer, Never> {
@@ -53,8 +52,7 @@ extension PublishersProxy where Base: UIPanGestureRecognizer {
 	}
 }
 
-#if !os(tvOS)
-
+#if !os(tvOS) && !os(visionOS)
 extension PublishersProxy where Base: UIScreenEdgePanGestureRecognizer {
 	/// A publisher which emits when this Screen Edge Gesture Recognizer is triggered
 	public var screenEdgePanGesture: AnyPublisher<UIScreenEdgePanGestureRecognizer, Never> {

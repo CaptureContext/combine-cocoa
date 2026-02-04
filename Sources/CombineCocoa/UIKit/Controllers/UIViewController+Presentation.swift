@@ -133,7 +133,7 @@ open class UIAdaptivePresentationControllerDelegateProxy:
 		self.forwardee?.presentationControllerShouldDismiss?(presentationController) ?? true
 	}
 
-	@available(iOS 15.0, *)
+	@available(iOS 15.0, tvOS 15.0, *)
 	public func presentationController(
 		_ presentationController: UIPresentationController,
 		prepare adaptivePresentationController: UIPresentationController
