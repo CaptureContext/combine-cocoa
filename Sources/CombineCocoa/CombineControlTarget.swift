@@ -24,8 +24,8 @@ extension Combine.Publishers {
 		public typealias Failure = Never
 
 		private let control: Control
-		private let addTargetAction: (Control, AnyObject, Selector) -> Void
-		private let removeTargetAction: (Control?, AnyObject, Selector) -> Void
+		private let addTargetAction: @MainActor (Control, AnyObject, Selector) -> Void
+		private let removeTargetAction: @MainActor (Control?, AnyObject, Selector) -> Void
 
 		/// Initialize a publisher that emits a Void whenever the
 		/// provided control fires an action.
@@ -37,8 +37,8 @@ extension Combine.Publishers {
 		///                                 responsible to remove the target action from the provided control.
 		public init(
 			control: Control,
-			addTargetAction: @escaping (Control, AnyObject, Selector) -> Void,
-			removeTargetAction: @escaping (Control?, AnyObject, Selector) -> Void
+			addTargetAction: @escaping @MainActor (Control, AnyObject, Selector) -> Void,
+			removeTargetAction: @escaping @MainActor (Control?, AnyObject, Selector) -> Void
 		) {
 			self.control = control
 			self.addTargetAction = addTargetAction
@@ -62,25 +62,29 @@ extension Combine.Publishers {
 // MARK: - Subscription
 
 extension Combine.Publishers.ControlTarget {
-	private final class Subscription<S: Subscriber>: Combine.Subscription
+	private final class Subscription<S: Subscriber>: Combine.Subscription, @unchecked Sendable
 	where S.Input == Void {
+		private let lock: NSLocking = NSRecursiveLock()
 		private var subscriber: S?
 		weak private var control: Control?
 
-		private let removeTargetAction: (Control?, AnyObject, Selector) -> Void
+		private let removeTargetAction: @MainActor (Control?, AnyObject, Selector) -> Void
 		private let action = #selector(handleAction)
 
 		init(
 			subscriber: S,
 			control: Control,
-			addTargetAction: @escaping (Control, AnyObject, Selector) -> Void,
-			removeTargetAction: @escaping (Control?, AnyObject, Selector) -> Void
+			addTargetAction: @escaping @MainActor (Control, AnyObject, Selector) -> Void,
+			removeTargetAction: @escaping @MainActor (Control?, AnyObject, Selector) -> Void
 		) {
 			self.subscriber = subscriber
 			self.control = control
 			self.removeTargetAction = removeTargetAction
 
-			addTargetAction(control, self, action)
+			nonisolated(unsafe) let control = control
+			Task { @MainActor in
+				addTargetAction(control, self, action)
+			}
 		}
 		
 		func request(_ demand: Subscribers.Demand) {
@@ -89,8 +93,13 @@ extension Combine.Publishers.ControlTarget {
 		}
 
 		func cancel() {
-			subscriber = nil
-			removeTargetAction(control, self, action)
+			lock.withLock {
+				subscriber = nil
+			}
+
+			Task { @MainActor in
+				removeTargetAction(control, self, action)
+			}
 		}
 
 		@objc private func handleAction() {

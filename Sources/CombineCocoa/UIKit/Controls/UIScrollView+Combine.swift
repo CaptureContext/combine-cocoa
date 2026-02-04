@@ -18,6 +18,7 @@ extension PublishersProxy where Base: UIScrollView {
 	/// - parameter offset: A threshold indicating how close to the bottom of the UIScrollView this publisher should emit.
 	///                     Defaults to 0
 	/// - returns: A publisher that emits when the bottom of the UIScrollView is reached within the provided threshold.
+	@MainActor
 	public func reachedBottom(offset: CGFloat = 0) -> some Publisher<Void, Never> {
 		base.publisher(for: \.contentOffset)
 			.map { [weak base] contentOffset -> Bool in
@@ -31,11 +32,13 @@ extension PublishersProxy where Base: UIScrollView {
 			.compactMap { $0 ? () : nil }
 	}
 
+	@MainActor
 	public var didEndDecelerating: some Publisher<Void, Never> {
 		let selector = #selector(UIScrollViewDelegate.scrollViewDidEndDecelerating)
 		return delegateProxy.proxy_intercept(selector).replaceOutput(with: ())
 	}
 
+	@MainActor
 	public var didEndDragging: some Publisher<Bool, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UIScrollViewDelegate.scrollViewDidEndDragging),
@@ -44,11 +47,13 @@ extension PublishersProxy where Base: UIScrollView {
 		return delegateProxy.proxy_intercept(selector).map(\.args.1)
 	}
 
+	@MainActor
 	public var didEndScrollingAnimation: some Publisher<Void, Never> {
 		let selector = #selector(UIScrollViewDelegate.scrollViewDidEndDecelerating)
 		return delegateProxy.proxy_intercept(selector).replaceOutput(with: ())
 	}
 
+	@MainActor
 	public var delegateProxy: AnyDelegateProxy {
 		if let base = base as? UITableView {
 			return TableViewDelegateProxy.proxy(for: base, \.delegate)

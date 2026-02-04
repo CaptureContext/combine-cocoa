@@ -4,6 +4,7 @@ import CombineExtensions
 
 extension PublishersProxy where Base: UIViewController {
 
+	@MainActor
 	public var dismissed: some Publisher<Void, Never> {
 		weak var _base = base
 		var _presentationStackSnapshot: (root: UIViewController, stack: [UIViewController])?
@@ -29,6 +30,7 @@ extension PublishersProxy where Base: UIViewController {
 			}
 	}
 
+	@MainActor
 	public var dismiss: some Publisher<[UIViewController], Never> {
 		weak var _base = base
 		var _presentationStackSnapshot: (root: UIViewController, stack: [UIViewController])?
@@ -51,7 +53,7 @@ extension PublishersProxy where Base: UIViewController {
 						let newStack = _presentationStackSnapshot.root._presentationStack ?? []
 						let dismissed = _presentationStackSnapshot.stack.filter { !newStack.contains($0) }
 						
-						return dismissed ?? [_presentationStackSnapshot.root]
+						return dismissed
 					}
 				)
 			}
@@ -59,6 +61,7 @@ extension PublishersProxy where Base: UIViewController {
 }
 
 extension PublishersProxy where Base: UIPresentationController {
+	@MainActor
 	public var willPresentWithAdaptiveStyle: some Publisher<Void, Never> {
 		let selector = #selector(UIAdaptivePresentationControllerDelegate.presentationController(
 			_:willPresentWithAdaptiveStyle:transitionCoordinator:
@@ -66,6 +69,7 @@ extension PublishersProxy where Base: UIPresentationController {
 		return delegateProxy.proxy_intercept(selector).replaceOutput(with: ())
 	}
 
+	@MainActor
 	public var shouldDismiss: some Publisher<Bool, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UIAdaptivePresentationControllerDelegate.presentationControllerShouldDismiss),
@@ -74,6 +78,7 @@ extension PublishersProxy where Base: UIPresentationController {
 		return delegateProxy.proxy_intercept(selector).map(\.output)
 	}
 
+	@MainActor
 	public var willDismiss: some Publisher<UIPresentationController, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UIAdaptivePresentationControllerDelegate.presentationControllerWillDismiss),
@@ -82,6 +87,7 @@ extension PublishersProxy where Base: UIPresentationController {
 		return delegateProxy.proxy_intercept(selector).map(\.args)
 	}
 
+	@MainActor
 	public var didDismiss: some Publisher<UIPresentationController, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UIAdaptivePresentationControllerDelegate.presentationControllerDidDismiss),
@@ -90,6 +96,7 @@ extension PublishersProxy where Base: UIPresentationController {
 		return delegateProxy.proxy_intercept(selector).map(\.args)
 	}
 
+	@MainActor
 	public var didAttemptToDismiss: some Publisher<UIPresentationController, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UIAdaptivePresentationControllerDelegate.presentationControllerDidAttemptToDismiss),
@@ -98,6 +105,7 @@ extension PublishersProxy where Base: UIPresentationController {
 		return delegateProxy.proxy_intercept(selector).map(\.args)
 	}
 
+	@MainActor
 	public var delegateProxy: UIAdaptivePresentationControllerDelegateProxy {
 		return .proxy(for: base, \.delegate)
 	}

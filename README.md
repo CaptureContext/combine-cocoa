@@ -23,7 +23,7 @@ If you use SwiftPM for your project, you can add CombineCocoa to your package fi
 ```swift
 .package(
   url: "https://github.com/capturecontext/combine-cocoa.git",
-  .upToNextMinor(from: "0.2.0")
+  .upToNextMinor(from: "0.3.0")
 )
 ```
 

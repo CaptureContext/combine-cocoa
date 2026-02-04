@@ -54,15 +54,19 @@ extension Combine.Publishers {
 extension Combine.Publishers.ControlEvent {
 	private final class Subscription<
 		SubscriberType: Subscriber
-	>: Combine.Subscription where SubscriberType.Input == Void {
+	>: Combine.Subscription, @unchecked Sendable where SubscriberType.Input == Void {
+		private let lock: NSLocking = NSRecursiveLock()
 		private var subscriber: SubscriberType?
 		weak private var control: Control?
 
 		init(subscriber: SubscriberType, control: Control, event: Control.Event) {
 			self.subscriber = subscriber
 			self.control = control
-			control.addTarget(self, action: #selector(handleEvent), for: event)
+			Task { @MainActor in
+				control.addTarget(self, action: #selector(handleEvent), for: event)
+			}
 		}
+
 
 		func request(_ demand: Subscribers.Demand) {
 			// We don't care about the demand at this point.
@@ -70,7 +74,7 @@ extension Combine.Publishers.ControlEvent {
 		}
 
 		func cancel() {
-			subscriber = nil
+			lock.withLock { self.subscriber = nil }
 		}
 
 		@objc private func handleEvent() {

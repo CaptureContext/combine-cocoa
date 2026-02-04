@@ -13,6 +13,7 @@ import CombineExtensions
 
 extension PublishersProxy where Base: UISearchBar {
 	/// Combine wrapper for `UISearchBarDelegate.searchBar(_:textDidChange:)`
+	@MainActor
 	public var textDidChange: some Publisher<String, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UISearchBarDelegate.searchBar(_:textDidChange:)),
@@ -22,6 +23,7 @@ extension PublishersProxy where Base: UISearchBar {
 	}
 
 	/// Combine wrapper for `UISearchBarDelegate.searchBarSearchButtonClicked(_:)`
+	@MainActor
 	public var searchButtonClicked: some Publisher<Void, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UISearchBarDelegate.searchBarSearchButtonClicked(_:)),
@@ -32,6 +34,7 @@ extension PublishersProxy where Base: UISearchBar {
 
 	#if !os(tvOS)
 	/// Combine wrapper for `UISearchBarDelegate.searchBarCancelButtonClicked(_:)`
+	@MainActor
 	public var cancelButtonClicked: some Publisher<Void, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UISearchBarDelegate.searchBarCancelButtonClicked(_:)),
@@ -41,6 +44,7 @@ extension PublishersProxy where Base: UISearchBar {
 	}
 	#endif
 
+	@MainActor
 	private var delegateProxy: UISearchBarDelegateProxy {
 		.proxy(for: base, \.delegate)
 	}

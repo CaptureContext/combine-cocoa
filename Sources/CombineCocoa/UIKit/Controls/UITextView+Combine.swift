@@ -18,6 +18,7 @@ extension PublishersProxy where Base: UITextView {
 	///         autocorrect changes are reflected as well.
 	///
 	/// - seealso: https://git.io/JJM5Q
+	@MainActor
 	public var value: AnyPublisher<String?, Never> {
 		Deferred { [weak textView = base] in
 			textView?.textStorage

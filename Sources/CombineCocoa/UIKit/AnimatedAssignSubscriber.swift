@@ -17,25 +17,52 @@ import UIKit
 public enum AssignTransition {
 	public enum Direction {
 		case top, bottom, left, right
+
+		var uiViewFlipAnimationOption: UIView.AnimationOptions {
+			switch self {
+			case .bottom: .transitionFlipFromBottom
+			case .top: .transitionFlipFromTop
+			case .left: .transitionFlipFromLeft
+			case .right: .transitionFlipFromRight
+			}
+		}
 	}
 	
-	/// Flip from either bottom, top, left, or right.
-	case flip(direction: Direction, duration: TimeInterval)
-	
-	/// Cross fade with previous value.
-	case fade(duration: TimeInterval)
-	
+	/// Default flip from either bottom, top, left, or right.
+	public static func flip(direction: Direction, duration: TimeInterval) -> AssignTransition {
+		.transition(
+			duration: duration,
+			options: direction.uiViewFlipAnimationOption,
+		)
+	}
+
+	/// Default cross fade with previous value.
+	public static func fade(duration: TimeInterval) -> AssignTransition {
+		.transition(
+			duration: duration,
+			options: .transitionCrossDissolve,
+		)
+	}
+
 	/// A custom animation. Do not include your own code to update the target of the assign subscriber.
 	case animation(
+		delay: TimeInterval = 0,
+		duration: TimeInterval,
+		options: UIView.AnimationOptions = [],
+		animations: () -> Void = {},
+		completion: ((Bool) -> Void)? = nil
+	)
+
+	/// A custom transition. Do not include your own code to update the target of the assign subscriber.
+	case transition(
 		duration: TimeInterval,
 		options: UIView.AnimationOptions,
-		animations: () -> Void,
-		completion: ((Bool) -> Void)?
+		animations: () -> Void = {},
+		completion: ((Bool) -> Void)? = nil
 	)
 }
 
-
-extension Publisher where Self.Failure == Never {
+extension Publisher where Self.Failure == Never, Output: Sendable {
 	/// Behaves identically to `Publisher.assign(to:on:)` except that it allows the user to
 	/// "wrap" emitting output in an animation transition.
 	///
@@ -57,33 +84,33 @@ extension Publisher where Self.Failure == Never {
 	///     myLabel.center.x += 10.0
 	///   }, completion: nil))
 	/// ```
+	@MainActor
 	public func assign<Root: UIView>(
-		to keyPath: ReferenceWritableKeyPath<Root, Self.Output>,
+		to keyPath: ReferenceWritableKeyPath<Root, Self.Output> & Sendable,
 		on object: Root,
 		animation: AssignTransition
 	) -> AnyCancellable {
-		var transition: UIView.AnimationOptions
-		var duration: TimeInterval
-		
 		switch animation {
-		case .fade(let interval):
-			duration = interval
-			transition = .transitionCrossDissolve
-		case let .flip(dir, interval):
-			duration = interval
-			switch dir {
-			case .bottom: transition = .transitionFlipFromBottom
-			case .top: transition = .transitionFlipFromTop
-			case .left: transition = .transitionFlipFromLeft
-			case .right: transition = .transitionFlipFromRight
-			}
-		case let .animation(interval, options, animations, completion):
-			// Use a custom animation.
+		case let .transition(duration, options, animations, completion):
+			return handleEvents(receiveOutput: { value in
+				UIView.transition(
+					 with: object,
+					 duration: duration,
+					 options: options,
+					 animations: {
+						 object[keyPath: keyPath] = value
+						 animations()
+					 },
+					 completion: completion
+				 )
+			 })
+			 .sink { _ in }
+		case let .animation(delay, interval, options, animations, completion):
 			return handleEvents(
 				receiveOutput: { value in
 					UIView.animate(
 						withDuration: interval,
-						delay: 0,
+						delay: delay,
 						options: options,
 						animations: {
 							object[keyPath: keyPath] = value
@@ -95,22 +122,7 @@ extension Publisher where Self.Failure == Never {
 			)
 			.sink { _ in }
 		}
-		
-		// Use one of the built-in transitions like flip or crossfade.
-		return
-		self
-			.handleEvents(receiveOutput: { value in
-				UIView.transition(
-					with: object,
-					duration: duration,
-					options: transition,
-					animations: {
-						object[keyPath: keyPath] = value
-					},
-					completion: nil
-				)
-			})
-			.sink { _ in }
+
 	}
 }
 #endif

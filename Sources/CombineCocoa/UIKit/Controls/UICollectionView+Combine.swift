@@ -14,6 +14,7 @@ import CombineExtensions
 
 extension PublishersProxy where Base: UICollectionView {
 	/// Combine wrapper for `collectionView(_:didSelectItemAt:)`
+	@MainActor
 	public var didSelectItem: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UICollectionViewDelegate.collectionView(_:didSelectItemAt:)),
@@ -23,6 +24,7 @@ extension PublishersProxy where Base: UICollectionView {
 	}
 
 	/// Combine wrapper for `collectionView(_:didDeselectItemAt:)`
+	@MainActor
 	public var didDeselectItem: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UICollectionViewDelegate.collectionView(_:didDeselectItemAt:)),
@@ -32,6 +34,7 @@ extension PublishersProxy where Base: UICollectionView {
 	}
 
 	/// Combine wrapper for `collectionView(_:didHighlightItemAt:)`
+	@MainActor
 	public var didHighlightItem: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UICollectionViewDelegate.collectionView(_:didHighlightItemAt:)),
@@ -41,6 +44,7 @@ extension PublishersProxy where Base: UICollectionView {
 	}
 
 	/// Combine wrapper for `collectionView(_:didUnhighlightItemAt:)`
+	@MainActor
 	public var didUnhighlightRow: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UICollectionViewDelegate.collectionView(_:didUnhighlightItemAt:)),
@@ -50,9 +54,11 @@ extension PublishersProxy where Base: UICollectionView {
 	}
 
 	/// Combine wrapper for `collectionView(_:willDisplay:forItemAt:)`
-	public var willDisplayCell:
-	some Publisher<(cell: UICollectionViewCell, indexPath: IndexPath), Never>
-	{
+	@MainActor
+	public var willDisplayCell: some Publisher<
+		(cell: UICollectionViewCell, indexPath: IndexPath),
+		Never
+	> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UICollectionViewDelegate.collectionView(_:willDisplay:forItemAt:)),
 			signature: base.delegate?.collectionView(_:willDisplay:forItemAt:)
@@ -61,16 +67,15 @@ extension PublishersProxy where Base: UICollectionView {
 	}
 
 	/// Combine wrapper for `collectionView(_:willDisplaySupplementaryView:forElementKind:at:)`
-	public var willDisplaySupplementaryView:
-	some Publisher<
+	@MainActor
+	public var willDisplaySupplementaryView: some Publisher<
 		(
 			supplementaryView: UICollectionReusableView,
 			elementKind: String,
 			indexPath: IndexPath
 		),
 		Never
-	>
-	{
+	> {
 		let selector = _makeMethodSelector(
 			selector:  #selector(UICollectionViewDelegate.collectionView(
 				_:willDisplaySupplementaryView:forElementKind:at:
@@ -83,9 +88,11 @@ extension PublishersProxy where Base: UICollectionView {
 	}
 
 	/// Combine wrapper for `collectionView(_:didEndDisplaying:forItemAt:)`
-	public var didEndDisplayingCell:
-	some Publisher<(cell: UICollectionViewCell, indexPath: IndexPath), Never>
-	{
+	@MainActor
+	public var didEndDisplayingCell: some Publisher<
+		(cell: UICollectionViewCell, indexPath: IndexPath),
+		Never
+	> {
 		let selector = _makeMethodSelector(
 			selector:  #selector(UICollectionViewDelegate.collectionView(_:didEndDisplaying:forItemAt:)),
 			signature: base.delegate?.collectionView(_:didEndDisplaying:forItemAt:)
@@ -94,16 +101,15 @@ extension PublishersProxy where Base: UICollectionView {
 	}
 
 	/// Combine wrapper for `collectionView(_:didEndDisplayingSupplementaryView:forElementKind:at:)`
-	public var didEndDisplaySupplementaryView:
-	some Publisher<
+	@MainActor
+	public var didEndDisplaySupplementaryView: some Publisher<
 		(
 			supplementaryView: UICollectionReusableView,
 			elementKind: String,
 			indexPath: IndexPath
 		),
 		Never
-	>
-	{
+	> {
 		let selector = _makeMethodSelector(
 			selector: #selector(
 				UICollectionViewDelegate.collectionView(
@@ -118,24 +124,21 @@ extension PublishersProxy where Base: UICollectionView {
 		return delegateProxy.proxy_intercept(selector).map { ($0.args.1, $0.args.2, $0.args.3) }
 	}
 
+	@MainActor
 	public func didEndDeceleratingAtCell(
 		_ strategy: UICollectionViewActiveCellDetectionStrategy = .largestVisible
 	) -> some Publisher<UICollectionViewCell?, Never> {
 		Publishers.Merge3(
 			didEndDecelerating,
 			didEndScrollingAnimation,
-			didEndDragging.compactMap { willDecelerateLater in
-		
-		return willDecelerateLater ? nil : ()
-			}.eraseToAnyPublisher()
+			didEndDragging.compactMap { $0 ? nil : () }.eraseToAnyPublisher()
 		).map { [weak base] in
-	
-		return base.flatMap(strategy.detect(in:))
+			return base.flatMap(strategy.detect(in:))
 		}.eraseToAnyPublisher()
 	}
 
+	@MainActor
 	public var delegateProxy: CollectionViewDelegateProxy {
-
 		return .proxy(for: base, \.delegate)
 	}
 }
@@ -147,28 +150,30 @@ open class CollectionViewDelegateProxy:
 {}
 
 public struct UICollectionViewActiveCellDetectionStrategy {
-	let _detect: (UICollectionView) -> UICollectionViewCell?
-	public func detect(in collectionView: UICollectionView) -> UICollectionViewCell? {
+	let _detect: @MainActor (UICollectionView) -> UICollectionViewCell?
 
+	@MainActor
+	public func detect(in collectionView: UICollectionView) -> UICollectionViewCell? {
 		return self._detect(collectionView)
 	}
 
-	public static func custom(_ strategy: @escaping  (UICollectionView) -> UICollectionViewCell?) -> Self {
-
+	@MainActor
+	public static func custom(_ strategy: @escaping @MainActor (UICollectionView) -> UICollectionViewCell?) -> Self {
 		return UICollectionViewActiveCellDetectionStrategy(_detect: strategy)
 	}
 
+	@MainActor
 	public static var largestVisible: Self {
 		.custom { collectionView in
-	
-		return collectionView.visibleCells.sorted { cell1, cell2 in
+			return collectionView.visibleCells.sorted { cell1, cell2 in
+				@MainActor
 				func area(for view: UIView, in superview: UIView) -> CGFloat {
 					let size = view.frame.intersection(superview.bounds).size
-			
-		return size.height * size.width
+
+					return size.height * size.width
 				}
-		
-		return area(for: cell1, in: collectionView) > area(for: cell2, in: collectionView)
+
+				return area(for: cell1, in: collectionView) > area(for: cell2, in: collectionView)
 			}.first
 		}
 	}

@@ -14,6 +14,7 @@ import CombineExtensions
 
 extension PublishersProxy where Base: UITableView {
 	/// Combine wrapper for `tableView(_:willDisplay:forRowAt:)`
+	@MainActor
 	public var willDisplayCell: some Publisher<(cell: UITableViewCell, indexPath: IndexPath), Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UITableViewDelegate.tableView(_:willDisplay:forRowAt:)),
@@ -23,6 +24,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:willDisplayHeaderView:forSection:)`
+	@MainActor
 	public var willDisplayHeaderView: some Publisher<(headerView: UIView, section: Int), Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UITableViewDelegate.tableView(_:willDisplayHeaderView:forSection:)),
@@ -32,6 +34,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:willDisplayFooterView:forSection:)`
+	@MainActor
 	public var willDisplayFooterView: some Publisher<(footerView: UIView, section: Int), Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:willDisplayFooterView:forSection:)),
@@ -41,6 +44,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didEndDisplaying:forRowAt:)`
+	@MainActor
 	public var didEndDisplayingCell: some Publisher<
 		(cell: UITableViewCell, indexPath: IndexPath),
 		Never
@@ -53,6 +57,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didEndDisplayingHeaderView:forSection:)`
+	@MainActor
 	public var didEndDisplayingHeaderView: some Publisher<(headerView: UIView, section: Int), Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UITableViewDelegate.tableView(_:didEndDisplayingHeaderView:forSection:)),
@@ -62,6 +67,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didEndDisplayingFooterView:forSection:)`
+	@MainActor
 	public var didEndDisplayingFooterView: some Publisher<(headerView: UIView, section: Int), Never> {
 		let selector = _makeMethodSelector(
 			selector: #selector(UITableViewDelegate.tableView(_:didEndDisplayingFooterView:forSection:)),
@@ -71,6 +77,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:accessoryButtonTappedForRowWith:)`
+	@MainActor
 	public var itemAccessoryButtonTapped: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:accessoryButtonTappedForRowWith:)),
@@ -80,6 +87,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didHighlightRowAt:)`
+	@MainActor
 	public var didHighlightRow: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:didHighlightRowAt:)),
@@ -89,6 +97,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didUnHighlightRowAt:)`
+	@MainActor
 	public var didUnhighlightRow: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:didUnhighlightRowAt:)),
@@ -98,6 +107,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didSelectRowAt:)`
+	@MainActor
 	public var didSelectRow: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:didSelectRowAt:)),
@@ -107,6 +117,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didDeselectRowAt:)`
+	@MainActor
 	public var didDeselectRow: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:didDeselectRowAt:)),
@@ -117,6 +128,7 @@ extension PublishersProxy where Base: UITableView {
 
 	#if !os(tvOS)
 	/// Combine wrapper for `tableView(_:willBeginEditingRowAt:)`
+	@MainActor
 	public var willBeginEditingRow: some Publisher<IndexPath, Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:willBeginEditingRowAt:)),
@@ -126,6 +138,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 
 	/// Combine wrapper for `tableView(_:didEndEditingRowAt:)`
+	@MainActor
 	public var didEndEditingRow: some Publisher<IndexPath?, Never> {
 		let selector = _makeMethodSelector(
 				selector: #selector(UITableViewDelegate.tableView(_:didEndEditingRowAt:)),
@@ -135,6 +148,7 @@ extension PublishersProxy where Base: UITableView {
 	}
 	#endif
 
+	@MainActor
 	public var delegateProxy: TableViewDelegateProxy {
 		.proxy(for: base, \.delegate)
 	}
