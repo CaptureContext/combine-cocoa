@@ -1,10 +1,12 @@
 # combine-cocoa
 
-[![CI](https://github.com/CaptureContext/combine-cocoa/actions/workflows/ci.yml/badge.svg)](https://github.com/CaptureContext/combine-cocoa/actions/workflows/ci.yml) [![SwiftPM 5.9](https://img.shields.io/badge/swiftpm-5.9-ED523F.svg?style=flat)](https://swift.org/download/) ![Platforms](https://img.shields.io/badge/Platforms-iOS_13_|_macOS_10.15_|_tvOS_14_|_watchOS_7-ED523F.svg?style=flat) [![@maximkrouk](https://img.shields.io/badge/contact-@capturecontext-1DA1F2.svg?style=flat&logo=twitter)](https://twitter.com/capture_context) 
+[![CI](https://github.com/capturecontext/combine-cocoa/actions/workflows/ci.yml/badge.svg)](https://github.com/capturecontext/combine-cocoa/actions/workflows/ci.yml) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcapturecontext%2Fcombine-cocoa%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/capturecontext/combine-cocoa) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcapturecontext%2Fcombine-cocoa%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/capturecontext/combine-cocoa)
 
 Cocoa extensions for Apple Combine framework.
 
-> NOTE: The package is in beta
+> [!NOTE]
+>
+> _The package is in beta_
 
 ## Installation
 
