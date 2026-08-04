@@ -1,0 +1,256 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+// swift-module-flags: -target arm64-apple-tvos13.0-simulator -enable-objc-interop -swift-version 6 -Onone -module-name CombineCocoa -package-name combine_cocoa
+// swift-module-flags-ignorable:  -formal-cxx-interoperability-mode=off -interface-compiler-version 6.3.3
+import Combine
+@_exported import CombineExtensions
+import Foundation
+import Swift
+import UIKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+extension Combine.Publishers {
+  public struct ControlEvent<Control> : Combine.Publisher where Control : UIKit.UIControl {
+    public typealias Output = Swift.Void
+    public typealias Failure = Swift.Never
+    private let control: Control
+    private let controlEvents: UIKit.UIControl.Event
+    public init(control: Control, events: UIKit.UIControl.Event)
+    public func receive<S>(subscriber: S) where S : Combine.Subscriber, S.Failure == Swift.Never, S.Input == ()
+  }
+}
+extension Combine.Publishers {
+  public struct ControlTarget<Control> : Combine.Publisher where Control : AnyObject {
+    public typealias Output = Swift.Void
+    public typealias Failure = Swift.Never
+    private let control: Control
+    private let addTargetAction: @_Concurrency.MainActor @Sendable (Control, Swift.AnyObject, ObjectiveC.Selector) -> Swift.Void
+    private let removeTargetAction: @_Concurrency.MainActor @Sendable (Control?, Swift.AnyObject, ObjectiveC.Selector) -> Swift.Void
+    public init(control: Control, addTargetAction: @escaping @_Concurrency.MainActor @Sendable (Control, Swift.AnyObject, ObjectiveC.Selector) -> Swift.Void, removeTargetAction: @escaping @_Concurrency.MainActor @Sendable (Control?, Swift.AnyObject, ObjectiveC.Selector) -> Swift.Void)
+    public func receive<S>(subscriber: S) where S : Combine.Subscriber, S.Failure == Swift.Never, S.Input == ()
+  }
+}
+public enum AssignTransition {
+  public enum Direction {
+    case top, bottom, left, right
+    @_semantics("derived_enum_equals") @_implements(Swift.Equatable, ==(_:_:)) public static func __derived_enum_equals(_ a: CombineCocoa.AssignTransition.Direction, _ b: CombineCocoa.AssignTransition.Direction) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public static func flip(direction: CombineCocoa.AssignTransition.Direction, duration: Foundation.TimeInterval) -> CombineCocoa.AssignTransition
+  public static func fade(duration: Foundation.TimeInterval) -> CombineCocoa.AssignTransition
+  case animation(delay: Foundation.TimeInterval = 0, duration: Foundation.TimeInterval, options: UIKit.UIView.AnimationOptions = [], animations: () -> Swift.Void = {}, completion: ((Swift.Bool) -> Swift.Void)? = nil)
+  case transition(duration: Foundation.TimeInterval, options: UIKit.UIView.AnimationOptions, animations: () -> Swift.Void = {}, completion: ((Swift.Bool) -> Swift.Void)? = nil)
+}
+extension Combine.Publisher where Self.Failure == Swift.Never, Self.Output : Swift.Sendable {
+  @_Concurrency.MainActor public func assign<Root>(to keyPath: any Swift.ReferenceWritableKeyPath<Root, Self.Output> & Swift.Sendable, on object: Root, animation: CombineCocoa.AssignTransition) -> Combine.AnyCancellable where Root : UIKit.UIView
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UIViewController {
+  @_Concurrency.MainActor public var dismissed: some Combine.Publisher<(), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var dismiss: some Combine.Publisher<Swift.Array<UIKit.UIViewController>, Swift.Never> {
+    get
+  }
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UIPresentationController {
+  @_Concurrency.MainActor public var willPresentWithAdaptiveStyle: some Combine.Publisher<(), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var shouldDismiss: some Combine.Publisher<Swift.Bool, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var willDismiss: some Combine.Publisher<UIKit.UIPresentationController, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didDismiss: some Combine.Publisher<UIKit.UIPresentationController, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didAttemptToDismiss: some Combine.Publisher<UIKit.UIPresentationController, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var delegateProxy: CombineCocoa.UIAdaptivePresentationControllerDelegateProxy {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency open class UIAdaptivePresentationControllerDelegateProxy : CombineExtensions.DelegateProxy<any UIKit.UIAdaptivePresentationControllerDelegate>, UIKit.UIAdaptivePresentationControllerDelegate {
+  @_Concurrency.MainActor @preconcurrency @objc public func presentationController(_ presentationController: UIKit.UIPresentationController, willPresentWithAdaptiveStyle style: UIKit.UIModalPresentationStyle, transitionCoordinator: (any UIKit.UIViewControllerTransitionCoordinator)?)
+  @_Concurrency.MainActor @preconcurrency @objc public func presentationControllerShouldDismiss(_ presentationController: UIKit.UIPresentationController) -> Swift.Bool
+  @available(iOS 15.0, tvOS 15.0, *)
+  @_Concurrency.MainActor @preconcurrency @objc public func presentationController(_ presentationController: UIKit.UIPresentationController, prepare adaptivePresentationController: UIKit.UIPresentationController)
+  @_Concurrency.MainActor @preconcurrency @objc public func presentationController(_ controller: UIKit.UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIKit.UIModalPresentationStyle) -> UIKit.UIViewController?
+  @_Concurrency.MainActor @preconcurrency @objc public func adaptivePresentationStyle(for controller: UIKit.UIPresentationController, traitCollection: UIKit.UITraitCollection) -> UIKit.UIModalPresentationStyle
+  @_Concurrency.MainActor @preconcurrency @objc public func adaptivePresentationStyle(for controller: UIKit.UIPresentationController) -> UIKit.UIModalPresentationStyle
+  @_Concurrency.MainActor @preconcurrency @objc public func presentationControllerWillDismiss(_ presentationController: UIKit.UIPresentationController)
+  @_Concurrency.MainActor @preconcurrency @objc public func presentationControllerDidDismiss(_ presentationController: UIKit.UIPresentationController)
+  @_Concurrency.MainActor @preconcurrency @objc public func presentationControllerDidAttemptToDismiss(_ presentationController: UIKit.UIPresentationController)
+  required public init(lifetime: CombineExtensions.Lifetime, _ originalSetter: @escaping (Swift.AnyObject) -> Swift.Void)
+  @objc deinit
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.NSTextStorage {
+  public var didProcessEditingRangeChangeInLength: some Combine.Publisher<(editedMask: UIKit.NSTextStorage.EditActions, editedRange: Foundation._NSRange, delta: Swift.Int), Swift.Never> {
+    get
+  }
+  public var delegateProxy: CombineCocoa.NSTextStorageDelegateProxy {
+    get
+  }
+}
+@_inheritsConvenienceInitializers open class NSTextStorageDelegateProxy : CombineExtensions.DelegateProxy<any UIKit.NSTextStorageDelegate>, UIKit.NSTextStorageDelegate {
+  required public init(lifetime: CombineExtensions.Lifetime, _ originalSetter: @escaping (Swift.AnyObject) -> Swift.Void)
+  @objc deinit
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UIBarButtonItem {
+  public var tap: Combine.AnyPublisher<Swift.Void, Swift.Never> {
+    get
+  }
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UICollectionView {
+  @_Concurrency.MainActor public var didSelectItem: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didDeselectItem: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didHighlightItem: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didUnhighlightRow: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var willDisplayCell: some Combine.Publisher<(cell: UIKit.UICollectionViewCell, indexPath: Foundation.IndexPath), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var willDisplaySupplementaryView: some Combine.Publisher<(supplementaryView: UIKit.UICollectionReusableView, elementKind: Swift.String, indexPath: Foundation.IndexPath), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didEndDisplayingCell: some Combine.Publisher<(cell: UIKit.UICollectionViewCell, indexPath: Foundation.IndexPath), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didEndDisplaySupplementaryView: some Combine.Publisher<(supplementaryView: UIKit.UICollectionReusableView, elementKind: Swift.String, indexPath: Foundation.IndexPath), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public func didEndDeceleratingAtCell(_ strategy: CombineCocoa.UICollectionViewActiveCellDetectionStrategy = .largestVisible) -> some Combine.Publisher<Swift.Optional<UIKit.UICollectionViewCell>, Swift.Never>
+  
+  @_Concurrency.MainActor public var delegateProxy: CombineCocoa.CollectionViewDelegateProxy {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency open class CollectionViewDelegateProxy : CombineExtensions.DelegateProxy<any UIKit.UICollectionViewDelegate>, UIKit.UICollectionViewDelegate {
+  required public init(lifetime: CombineExtensions.Lifetime, _ originalSetter: @escaping (Swift.AnyObject) -> Swift.Void)
+  @objc deinit
+}
+public struct UICollectionViewActiveCellDetectionStrategy {
+  internal let _detect: @_Concurrency.MainActor @Sendable (UIKit.UICollectionView) -> UIKit.UICollectionViewCell?
+  @_Concurrency.MainActor public func detect(in collectionView: UIKit.UICollectionView) -> UIKit.UICollectionViewCell?
+  @_Concurrency.MainActor public static func custom(_ strategy: @escaping @_Concurrency.MainActor @Sendable (UIKit.UICollectionView) -> UIKit.UICollectionViewCell?) -> CombineCocoa.UICollectionViewActiveCellDetectionStrategy
+  @_Concurrency.MainActor public static var largestVisible: CombineCocoa.UICollectionViewActiveCellDetectionStrategy {
+    get
+  }
+}
+extension UIKit.UIControl {
+  @_Concurrency.MainActor @preconcurrency public func publisher(for events: UIKit.UIControl.Event) -> Combine.AnyPublisher<Swift.Void, Swift.Never>
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UITapGestureRecognizer {
+  public var tapGesture: Combine.AnyPublisher<UIKit.UITapGestureRecognizer, Swift.Never> {
+    get
+  }
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UISwipeGestureRecognizer {
+  public var swipeGesture: Combine.AnyPublisher<UIKit.UISwipeGestureRecognizer, Swift.Never> {
+    get
+  }
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UIPanGestureRecognizer {
+  public var panGesture: Combine.AnyPublisher<UIKit.UIPanGestureRecognizer, Swift.Never> {
+    get
+  }
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UILongPressGestureRecognizer {
+  public var longPressGesture: Combine.AnyPublisher<UIKit.UILongPressGestureRecognizer, Swift.Never> {
+    get
+  }
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UIScrollView {
+  @_Concurrency.MainActor public func reachedBottom(offset: CoreFoundation.CGFloat = 0) -> some Combine.Publisher<(), Swift.Never>
+  
+  @_Concurrency.MainActor public var didEndDecelerating: some Combine.Publisher<(), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didEndDragging: some Combine.Publisher<Swift.Bool, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didEndScrollingAnimation: some Combine.Publisher<(), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var delegateProxy: CombineExtensions.AnyDelegateProxy {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency open class ScrollViewDelegateProxy : CombineExtensions.DelegateProxy<any UIKit.UIScrollViewDelegate>, UIKit.UIScrollViewDelegate {
+  required public init(lifetime: CombineExtensions.Lifetime, _ originalSetter: @escaping (Swift.AnyObject) -> Swift.Void)
+  @objc deinit
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UISearchBar {
+  @_Concurrency.MainActor public var textDidChange: some Combine.Publisher<Swift.String, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var searchButtonClicked: some Combine.Publisher<(), Swift.Never> {
+    get
+  }
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UITableView {
+  @_Concurrency.MainActor public var willDisplayCell: some Combine.Publisher<(cell: UIKit.UITableViewCell, indexPath: Foundation.IndexPath), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var willDisplayHeaderView: some Combine.Publisher<(headerView: UIKit.UIView, section: Swift.Int), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var willDisplayFooterView: some Combine.Publisher<(footerView: UIKit.UIView, section: Swift.Int), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didEndDisplayingCell: some Combine.Publisher<(cell: UIKit.UITableViewCell, indexPath: Foundation.IndexPath), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didEndDisplayingHeaderView: some Combine.Publisher<(headerView: UIKit.UIView, section: Swift.Int), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didEndDisplayingFooterView: some Combine.Publisher<(headerView: UIKit.UIView, section: Swift.Int), Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var itemAccessoryButtonTapped: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didHighlightRow: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didUnhighlightRow: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didSelectRow: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var didDeselectRow: some Combine.Publisher<Foundation.IndexPath, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor public var delegateProxy: CombineCocoa.TableViewDelegateProxy {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency open class TableViewDelegateProxy : CombineExtensions.DelegateProxy<any UIKit.UITableViewDelegate>, UIKit.UITableViewDelegate {
+  required public init(lifetime: CombineExtensions.Lifetime, _ originalSetter: @escaping (Swift.AnyObject) -> Swift.Void)
+  @objc deinit
+}
+extension CombineExtensions.PublishersProxy where Base : UIKit.UITextView {
+  @_Concurrency.MainActor public var value: Combine.AnyPublisher<Swift.String?, Swift.Never> {
+    get
+  }
+}
+extension CombineCocoa.AssignTransition.Direction : Swift.Equatable {}
+extension CombineCocoa.AssignTransition.Direction : Swift.Hashable {}
+extension CombineCocoa.UIAdaptivePresentationControllerDelegateProxy : Swift.Sendable {}
+extension CombineCocoa.CollectionViewDelegateProxy : Swift.Sendable {}
+extension CombineCocoa.ScrollViewDelegateProxy : Swift.Sendable {}
+extension CombineCocoa.TableViewDelegateProxy : Swift.Sendable {}
